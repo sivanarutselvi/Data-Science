@@ -1,0 +1,116 @@
+---
+title: "Description"
+author: "Siva"
+date: "2023-10-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Supermarket Sales Data Analysis
+
+Supermarket sales data is imported from Kaggle <https://www.kaggle.com>. 
+This dataset contains 1000 records of 17 variables. Three branches of supermarkets 
+in 3 different cities were observed for the sales, revenue, cost of goods sold 
+and gross income for 4 different product lines. Both men and women customer 
+purchases either they are members or non-members were recorded with date and 
+time. Also, every transaction was identified with unique invoice id.
+
+Categorical variables are branch, city, type of customer, customer gender and kind of product they buy and method of payment. Quantitative variables are cost of single unit, quantity, 5% markup, revenue, cogs (cost of goods sold) and gross income.
+
+## Descriptive Statistics
+
+```{r smdata_summary}
+smdata <- read.csv('data/supermarket_sales.csv')
+summary(smdata)
+```
+
+## Univariate Data Exploration
+
+### Histogram plots 
+
+```{r smdata_histogram, echo=FALSE}
+num_cols = data.frame(subset(smdata, select=c(7,10,17)))
+par(mfrow = c(1, 3))
+invisible(lapply(1:ncol(num_cols), function(i) hist(num_cols[, i],main=names(num_cols)[i])))
+```
+
+### Boxplots 
+
+```{r smdata_bp, echo=FALSE}
+num_cols = data.frame(subset(smdata, select=c(7,10,14,16,17)))
+par(mfrow = c(1, ncol(num_cols)))
+invisible(lapply(1:ncol(num_cols), function(i) boxplot(num_cols[, i],main=names(num_cols)[i])))
+```
+
+## Categorical Variables Analysis
+
+```{r smdata_catvar}
+table(smdata$branch)
+table(smdata$city)
+table(smdata$customer_type)
+table(smdata$gender_customer)
+table(smdata$product_line)
+table(smdata$payment_method)
+```
+
+##  Bivariate Analysis
+
+###	City Vs Product line
+```{r smdata_cpl}
+library(ggplot2)
+pink = c("#fde0dd","#fa9fb5","#c51b8a")
+
+cpl <- ggplot(smdata) + 
+  geom_bar(aes(city,fill = city)) +scale_fill_manual(values = c(pink))+
+  xlab(NULL) + 
+  ylab(NULL)+ facet_wrap(~product_line)+theme_bw()
+cpl
+```
+### Customer Gender Vs Product Line
+```{r smdata_cgpl}
+blue = c("#deebf7","#9ecae1","#3182bd")
+cgpl =  ggplot(smdata) + 
+  geom_bar(mapping=aes(city,fill = gender_customer),position="dodge") +
+  scale_fill_manual(values = c("#fa9fb5","#9ecae1"))+xlab(NULL) + 
+  ylab(NULL)+ facet_wrap(~product_line)+theme_bw()
+
+cgpl
+```
+
+### Customer Gender and Product line based on Payment Method
+```{r smdata_cgplpm}
+gp = ggplot(smdata) + geom_bar(mapping=aes(payment_method,fill = gender_customer),position="dodge") +
+  scale_fill_manual(values = c("#fa9fb5","#9ecae1"))+xlab(NULL) + 
+  ylab(NULL)+ facet_wrap(~product_line)+theme_bw()
+
+gp
+```
+
+## Observations and Conclusions
+
+On observing the supermarket sales data it is found that there are no missing values
+in the dataset and outliers had been spotted in revenue, cogs and gross income
+variables. Almost male and female customers are in equal proportion. Equal amounts of data were recorded across the three cities, members and non members are almost equal.
+The catagories of products were equally proportional.
+
+In Yangon city the sales of electronics and accessories, home and lifestyle goods
+was highest. Health, beauty and fashion accessories sales was the least in this city in 2019.
+
+In Naypyitaw city ranks first in the sales of food and beverages and ranks last in 
+the sales of sports and travel ( also in home and lifestyle) in the year 2019.
+
+The Mandalay city is just the opposite of Naypyitaw city because it ranks first in 
+sales of sports and travel city and ranks last in sales of food and beverages.
+Otherwise it catches with Naypyitaw city in the sales of other products.
+
+Yangon city men mostly buy electronics and accessories, food and beverages whereas
+women mosly buy home and lifestyle and sports and travel goods.
+
+In Naypyitaw city men mostly buy health, beauty and fashion accessories and women buy food and beverages and fashion accessories.
+
+Mandalay city women buy mostly fashion accessories and men buy health and beauty
+goods mostly in 2019.
+
